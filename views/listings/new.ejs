@@ -1,0 +1,226 @@
+<% layout("layouts/boilerplate") %>
+
+<body>
+  <h2 class="mb-4">Create New Listing</h2>
+  
+  <form method="POST" action="/listings" class="needs-validation" novalidate enctype="multipart/form-data">
+      
+      <div class="mb-3">
+          <label for="title" class="form-label"> Title</label>
+          <input type="text" class="form-control" id="title" name="title" placeholder="Enter title" required>
+          <div class="valid-feedback">
+                Looks good!
+          </div>
+      </div>
+      
+      <div class="mb-3">
+          <label for="description" class="form-label">Description</label>
+          <textarea class="form-control" id="description" name="description" placeholder="Enter description" required></textarea>
+          <div class="invalid-feedback">
+                Please provide a description.
+          </div>
+      </div>
+      
+      <div class="mb-3">
+          <label for="price" class="form-label">Price</label>
+          <input type="number" class="form-control" id="price" name="price" placeholder="Enter price" required>
+          <div class="invalid-feedback">
+                Please provide a valid price.
+          </div>
+      </div>
+      
+      <div class="mb-3">
+          <label for="category" class="form-label">Category</label>
+          <select class="form-control" id="category" name="category" required>
+              <option value="">Select Category</option>
+              <option value="Smartphone">Smartphone</option>
+              <option value="Laptop">Laptop</option>
+              <option value="Headphones">Headphones</option>
+              <option value="Smartwatch">Smartwatch</option>
+              <option value="Gaming Console">Gaming Console</option>
+              <option value="Smart TV">Smart TV</option>
+              <option value="Tablet">Tablet</option>
+              <option value="Camera">Camera</option>
+              <option value="Speaker">Speaker</option>
+              <option value="Monitor">Monitor</option>
+          </select>
+          <div class="invalid-feedback">
+                  Please select a category.
+          </div>
+      </div>
+      
+      <div class="mb-3">
+          <label for="launchDate" >Launch Date</label>
+          <input type="date" class="form-control" id="launchDate" name="launchDate" required>
+            <div class="invalid-feedback">
+                    Please provide a launch date.
+                    </div>
+      </div>
+
+       <div class="mb-3">
+          <label for="image" class="form-label">Upload Image</label>
+          <input type="file" class="form-control" id="image" name="image" required>
+            <div class="invalid-feedback">
+                    Please provide a valid image URL.
+                    </div>
+      </div>
+
+        <div class="mb-3">
+            <label for="specScore" class="form-label">Spec Score (out of 100)</label>
+            <input type="number" class="form-control" id="specScore" name="specScore" min="0" max="100" placeholder="Enter spec score" required>
+                <div class="invalid-feedback">
+                        Please provide a valid spec score between 0 and 100.
+                        </div>
+        </div>
+
+        <!-- FIXED Specifications Section -->
+        <div class="mb-4">
+            <label class="form-label">Specifications</label>
+            <div id="specs-container">
+                <div class="row mb-2 spec-field" style="background: #f8f9fa; padding: 10px; border-radius: 5px;">
+                    <div class="col-md-5">
+                        <input type="text" class="form-control spec-key" placeholder="e.g. Operating System" required>
+                    </div>
+                    <div class="col-md-5">
+                        <input type="text" class="form-control spec-value" placeholder="e.g. Android 15" required>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger btn-sm remove-spec">×</button>
+                    </div>
+                </div>
+            </div>
+            <button type="button" id="add-spec" class="btn btn-success btn-sm mt-2">+ Add Specification</button>
+            
+            <!-- Hidden input to store specs JSON -->
+            <input type="hidden" id="specs-json" name="specs">
+        </div>
+
+        <!-- Preview Section -->
+        <div class="mb-4">
+            <h5>Specifications Preview:</h5>
+            <div id="specs-preview" class="table-responsive">
+                <table class="table table-bordered table-striped">
+                    <tbody id="preview-tbody">
+                        <tr><td colspan="2" class="text-muted text-center">No specifications added yet</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-warning">Create New</button>
+        <br><br>
+  </form>
+
+  <script>
+    let specCount = 0;
+
+    // Function to add new spec field
+    document.getElementById("add-spec").addEventListener("click", function() {
+        const container = document.getElementById("specs-container");
+        
+        const newField = document.createElement("div");
+        newField.classList.add("row", "mb-2", "spec-field");
+        newField.style.background = "#f8f9fa";
+        newField.style.padding = "10px";
+        newField.style.borderRadius = "5px";
+
+        newField.innerHTML = `
+            <div class="col-md-5">
+                <input type="text" class="form-control spec-key" placeholder="e.g. Processor" required>
+            </div>
+            <div class="col-md-5">
+                <input type="text" class="form-control spec-value" placeholder="e.g. Apple A17 Bionic" required>
+            </div>
+            <div class="col-md-2">
+                <button type="button" class="btn btn-danger btn-sm remove-spec">×</button>
+            </div>
+        `;
+
+        container.appendChild(newField);
+
+        // Add event listeners to new inputs
+        newField.querySelector(".spec-key").addEventListener("input", updateSpecsPreview);
+        newField.querySelector(".spec-value").addEventListener("input", updateSpecsPreview);
+
+        // Remove button functionality
+        newField.querySelector(".remove-spec").addEventListener("click", function() {
+            if (container.children.length > 1) {
+                newField.remove();
+                updateSpecsPreview();
+            }
+        });
+
+        updateSpecsPreview();
+    });
+
+    // Function to update specs preview and hidden input
+    function updateSpecsPreview() {
+        const keys = document.querySelectorAll('.spec-key');
+        const values = document.querySelectorAll('.spec-value');
+        const previewTbody = document.getElementById('preview-tbody');
+        const specsJson = document.getElementById('specs-json');
+        
+        const specsData = {};
+        previewTbody.innerHTML = '';
+        
+        let hasSpecs = false;
+        
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i].value.trim();
+            const value = values[i].value.trim();
+            
+            if (key && value) {
+                specsData[key] = value;
+                hasSpecs = true;
+                
+                // Add to preview table
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <th style="width: 30%;">${key}</th>
+                    <td>${value}</td>
+                `;
+                previewTbody.appendChild(row);
+            }
+        }
+        
+        if (!hasSpecs) {
+            previewTbody.innerHTML = '<tr><td colspan="2" class="text-muted text-center">No specifications added yet</td></tr>';
+        }
+        
+        // Update hidden input
+        specsJson.value = JSON.stringify(specsData);
+    }
+
+    // Add event listeners to initial spec fields
+    document.addEventListener('DOMContentLoaded', function() {
+        document.querySelectorAll('.spec-key, .spec-value').forEach(input => {
+            input.addEventListener('input', updateSpecsPreview);
+        });
+
+        // Initial remove button functionality
+        document.querySelectorAll('.remove-spec').forEach(button => {
+            button.addEventListener('click', function() {
+                const container = document.getElementById("specs-container");
+                if (container.children.length > 1) {
+                    button.closest('.spec-field').remove();
+                    updateSpecsPreview();
+                }
+            });
+        });
+
+        updateSpecsPreview();
+    });
+
+    // Form submission validation
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const specsJson = document.getElementById('specs-json').value;
+        if (!specsJson || specsJson === '{}') {
+            alert('Please add at least one specification');
+            e.preventDefault();
+            return false;
+        }
+    });
+  </script>
+
+</body>
+<script src="/Js/script.js"></script>

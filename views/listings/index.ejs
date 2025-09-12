@@ -1,0 +1,101 @@
+<% layout("layouts/boilerplate") %>
+
+<style>
+  #filter {
+    display: flex;
+    flex-wrap: wrap;
+    height: 70px;
+    width: 50%;
+    margin-bottom: 1rem;
+    padding-top: 0.5rem;
+    padding-left: 1.5rem;
+    border-radius: 20px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  .filter {
+    text-align: center;
+    margin-right: 2rem;
+    opacity: 0.7;
+  }
+  .filter:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
+  .filter p {
+    font-size: 0.9em;
+  }
+  .product-img {
+    height: 200px;
+    object-fit: cover;
+    width: 100%;
+    border-top-left-radius: 0.375rem;
+    border-top-right-radius: 0.375rem;
+  }
+</style>
+
+<div id="filter">
+  <a href="/listings" class="filter">
+    <i class="fa-solid fa-list" style="color:#2d80ee;"></i>
+    <p>All</p>
+  </a>
+  <a href="/listings?category=Smartphone" class="filter">
+    <i class="fa-solid fa-mobile-screen-button" style="color:#2d80ee;"></i>
+    <p>Smartphones</p>
+  </a>
+  <a href="/listings?category=Laptop" class="filter">
+    <i class="fa-solid fa-laptop" style="color:#2d80ee;"></i>
+    <p>Laptops</p>
+  </a>
+  <a href="/listings?category=Headphones" class="filter">
+    <i class="fa-solid fa-headphones" style="color:#2d80ee;"></i>
+    <p>Headphones</p>
+  </a>
+  <a href="/listings?category=Tablet" class="filter">
+    <i class="fa-solid fa-tablet-screen-button" style="color:#2d80ee;"></i>
+    <p>Tablets</p>
+  </a>
+  <a href="/listings?category=Gaming Console" class="filter">
+    <i class="fa-brands fa-playstation" style="color:#2d80ee;"></i>
+    <p>Consoles</p>
+  </a>
+  <a href="/listings?category=Smart TV" class="filter">
+    <i class="fa-solid fa-tv" style="color:#2d80ee;"></i>
+    <p>Televisions</p>
+  </a>
+</div>
+
+<div class="row">
+  <% if (allListings.length === 0) { %>
+    <div class="col-12 text-center mt-4">
+      <h4>No results found.</h4>
+    </div>
+  <% } else { %>
+    <% allListings.forEach(function(listing) { %>
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4 d-flex">
+        <div class="card h-100 d-flex flex-column w-100 listing-card">
+          <img  
+            src="<%= listing.images.url %>" 
+            class="card-img-top product-img" 
+            alt="<%= listing.title %>"
+          >
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title text-truncate"><%= listing.title %></h5>
+            <p class="card-text text-truncate" style="-webkit-line-clamp: 2; line-clamp: 2; display: -webkit-box; -webkit-box-orient: vertical; overflow: hidden;">
+              <%= listing.description %>
+            </p>
+            <p class="mt-auto mb-1">
+              Price: ₹<%= (listing.price * 83).toLocaleString("en-IN") %>
+              <span style="color:gray;font-size:small;">(approx.)</span>
+            </p>
+            <p class="card-text">
+              <small class="text-muted">
+                Launch Date: <%= listing.launchDate %>
+              </small>
+            </p>
+            <a href="/listings/<%= listing._id %>" class="btn btn-primary mt-auto">View Details</a>
+          </div>
+        </div>
+      </div>
+    <% }) %>
+  <% } %>
+</div>

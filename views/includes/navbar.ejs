@@ -1,0 +1,61 @@
+<style>
+  .search-btn {
+    border-radius: 17px;
+    background-color: #373636;
+  }
+  .search-btn:hover {
+    background-color: #222;
+  }
+  .search-input {
+    border-radius: 17px;
+    background-color: #EEEEEE;
+    padding: 0rem 3rem 0rem 3rem;
+  }
+</style>
+
+<nav class="navbar navbar-expand-lg bg-body-tertiary" style="background-color: #222 !important;">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="/listings"><i class="fa-brands fa-instalod fa-spin fa-2xl" style="color: #2d80ee;"></i></a>
+    <h1 class="navbar-brand mt-2" style="color:#2d80ee !important"><i>GadgetsInfo</i></h1>
+
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup"
+      aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+
+      <div class="navbar-nav mx-auto">
+        <form class="d-flex" role="search" action="/listings" method="GET">
+          <input 
+            class="form-control me-2 search-input" 
+            type="search" 
+            name="q" 
+            placeholder="Search Gadgets" 
+            aria-label="Search"
+            value="<%= typeof searchQuery !== 'undefined' ? searchQuery : '' %>"
+          />
+          <button class="btn search-btn" type="submit">
+            <i class="fa-solid fa-magnifying-glass" style="color: #FFD43B;"></i>
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <div class="ms-auto d-flex align-items-center">
+      <a class="btn btn-success me-3" href="/listings/new">+ Create New Listing</a>
+
+      <% if (!currUser) { %>
+        <a class="btn btn-primary me-2" style="color:white !important" href="/signin">Sign In</a>
+        <span class="me-2" style="color: white;">/</span>
+        <a class="btn btn-primary me-2" href="/signup">Sign Up</a>
+        <span class="me-2">/</span>
+      <% } %>
+      <% if (currUser) { %>
+        <a class="btn btn-danger" href="/signout">Sign Out</a>
+      <% } %>
+    </div>
+  </div>
+</nav>
+
+

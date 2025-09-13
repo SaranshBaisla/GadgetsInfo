@@ -105,6 +105,7 @@ app.use((err, req, res, next) => {
 });
 
 // Start server
-app.listen(5050, () => {
-  console.log("App is listening on port 5050");
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`App is listening on port ${port}`);
 });

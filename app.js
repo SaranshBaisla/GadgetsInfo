@@ -67,9 +67,6 @@ const sessionOptions = {
   }
 }
 
-app.get("/", (req, res) => {
-  res.send("Are you lost? Go to /listings");
-});
 
 
 

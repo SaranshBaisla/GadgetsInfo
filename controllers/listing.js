@@ -29,21 +29,32 @@ module.exports.renderNewForm = (req, res) => {
 };
 
 module.exports.showListing = async (req, res) => {
-  const { id } = req.params;
-  const listing = await Listing.findById(id)
-    .populate("owner")
-    .populate({
-      path: "reviews",
-      populate: { path: "author" },
-    });
+  try {
+    const { id } = req.params;
+    const listing = await Listing.findById(id)
+      .populate("owner")
+      .populate({
+        path: "reviews",
+        populate: { path: "author" },
+      });
 
-  if (!listing) {
-    req.flash("error", "Listing not found!");
-    return res.redirect("/listings");
+    if (!listing) {
+      req.flash("error", "Listing not found!");
+      return res.redirect("/listings");
+    }
+
+    // ✅ Check ownership
+    const isOwner =
+      req.user && req.user._id.toString() === listing.owner._id.toString();
+
+    res.render("listings/show", { listing, currUser: req.user, isOwner });
+  } catch (err) {
+    console.error("Error in showListing:", err);
+    req.flash("error", "Something went wrong!");
+    res.redirect("/listings");
   }
-
-  res.render("listings/show", { listing });
 };
+
 
 module.exports.createListing = async (req, res, next) => {
   try {
